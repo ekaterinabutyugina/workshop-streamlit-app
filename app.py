@@ -1,85 +1,184 @@
-# Standard imports
+# Streamlit live coding script
+import streamlit as st
 import pandas as pd
-
-# matplotlib
-import matplotlib as mpl
 import matplotlib.pyplot as plt
-#import seaborn as sns
-#plotly
 import plotly.express as px
 import plotly.graph_objects as go
+from urllib.request import urlopen
+import json
+from copy import deepcopy
 
-import streamlit as st
+# First some MPG Data Exploration
+@st.cache_data
+def load_data(path):
+    df = pd.read_csv(path)
+    return df
 
-st.title("MPG")
+mpg_df_raw = load_data(path="mpg.csv")
+mpg_df = deepcopy(mpg_df_raw)
 
-df = pd.read_csv("mpg.csv")
+# Add title and header
+st.title("Introduction to Streamlit")
+st.header("MPG Data Exploration")
 
-# Basic set-up of the page:
-# First the checkbox to show the data frame
-if st.sidebar.checkbox('Show dataframe'):
-    st.header("dataframe")
-    st.dataframe(df.head())
+if st.sidebar.checkbox("Show Dataframe"):
+    st.subheader("This is my dataset")
+    st.dataframe(data = mpg_df)
 
-# Then the radio botton for the plot type
-show_plot = st.sidebar.radio(
-    label='Choose Plot type', options=['Matplotlib', 'Plotly'])
+# Setting up columns
+left_column, middle_column, right_column = st.columns([3, 1, 1])
 
-st.header("Highway Fuel Efficiency")
-years = ["All"]+sorted(pd.unique(df['year']))
-year = st.sidebar.selectbox("choose a Year", years)   # Here the selection of the year.
-car_classes = ['All'] + sorted(pd.unique(df['class']))
-car_class = st.sidebar.selectbox("choose a Class", car_classes)  # and the selection of the class.
+# Widgets: selectbox
+years = ["All"]+sorted(pd.unique(mpg_df['year']))
+year = st.sidebar.selectbox("Choose a Year", years)
 
+# Widgets: radio buttons
 show_means = st.sidebar.radio(
     label='Show Class Means', options=['Yes', 'No'])
 
-st.subheader(f'Fuel efficiency vs. engine displacement for {year}')
+plot_types = ["Matplotlib", "Plotly"]
+plot_type = st.sidebar.radio("Choose Plot Type", plot_types)
 
 
-# With these functions we wrangle the data and plot it.
-def mpg_mpl(year, car_class, show_means):
-    fig, ax = plt.subplots()
-    if year == 'All':
-        group = df
-    else:
-        group = df[df['year'] == year]
-    if car_class != 'All':
-        st.text(f'plotting car class: {car_class}')
-        group = group[group['class'] == car_class]
-    group.plot('displ', 'hwy', marker='.', linestyle='', ms=12, alpha=0.5, ax=ax, legend=None)
-    if show_means == "Yes":
-      #  means = df.groupby('class').mean()
-        means = df.groupby('class')[['displ', 'hwy']].mean()
-        for cc in means.index:
-            ax.plot(means.loc[cc, 'displ'], means.loc[cc, 'hwy'], marker='.', linestyle='', ms=12, alpha=1, label=cc)
-        ax.legend(loc='upper right', bbox_to_anchor=(1.1, 1))
-    ax.set_xlim([1, 8])
-    ax.set_ylim([10, 50])
-    plt.close()
-    return fig
-
-
-def mpg_plotly(year, car_class, show_means):
-    if year == 'All':
-        group = df
-    else:
-        group = df[df['year'] == year]
-    if car_class != 'All':
-        group = group[group['class'] == car_class]
-    fig = px.scatter(group, x='displ', y='hwy', opacity=0.5, range_x=[1, 8], range_y=[10, 50])
-    if show_means == "Yes":
-      #  means = df.groupby('class').mean().reset_index()
-        means = df.groupby('class')[['displ', 'hwy']].mean().reset_index()
-        fig = px.scatter(means, x='displ', y='hwy', opacity=0.5, color='class', range_x=[1, 8], range_y=[10, 50])
-        fig.add_trace(go.Scatter(x=group['displ'], y=group['hwy'], mode='markers', name=f'{year}_{car_class}',
-                                 opacity=0.5, marker=dict(color="RoyalBlue")))
-    return fig
-
-
-if show_plot == 'Plotly':
-    st.plotly_chart(mpg_plotly(year, car_class, show_means))
-
+# Flow control and plotting
+if year == "All":
+    reduced_df = mpg_df
 else:
-    st.pyplot(mpg_mpl(year, car_class, show_means))
+    reduced_df = mpg_df[mpg_df["year"] == year]
+
+means = reduced_df.groupby('class').mean(numeric_only=True)
+
+# In Matplotlib
+m_fig, ax = plt.subplots(figsize=(10, 8))
+ax.scatter(reduced_df['displ'], reduced_df['hwy'], alpha=0.7)
+
+if show_means == "Yes":
+    ax.scatter(means['displ'], means['hwy'], alpha=0.9, color="black")
+
+ax.set_title("Engine Size vs. Highway Fuel Mileage")
+ax.set_xlabel('Displacement (Liters)')
+ax.set_ylabel('MPG')
+
+
+# In Plotly
+p_fig = px.scatter(reduced_df, x='displ', y='hwy', opacity=0.5,
+                   range_x=[1, 8], range_y=[10, 50],
+                   width=750, height=600, color = "class",
+                   labels={"displ": "Displacement (Liters)",
+                           "hwy": "MPG"},
+                   title="Engine Size vs. Highway Fuel Mileage")
+p_fig.update_layout(title_font_size=22)
+
+if show_means == "Yes":
+    p_fig.add_trace(go.Scatter(x=means['displ'], y=means['hwy'],
+                               mode="markers" ))
+    p_fig.update_layout(showlegend=False)
+
+# Select which plot to show
+if plot_type == "Matplotlib":
+    st.pyplot(m_fig)
+else:
+    st.plotly_chart(p_fig)
+
+# We can write stuff
+url = "https://archive.ics.uci.edu/ml/datasets/auto+mpg"
+st.write("Data Source:", url)
+# "This works too:", url
+
+# Another header
+st.header("Maps")
+
+
+# Sample Streamlit Map
+st.subheader("Streamlit Map")
+ds_geo = px.data.carshare()
+print(ds_geo)
+ds_geo['lat'] = ds_geo['centroid_lat']
+ds_geo['lon'] = ds_geo['centroid_lon']
+st.map(ds_geo)
+
+# Sample Choropleth mapbox using Plotly GO
+st.subheader("Plotly Map")
+
+with urlopen('https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json') as response:
+    counties = json.load(response)
+df = pd.read_csv("https://raw.githubusercontent.com/plotly/datasets/master/fips-unemp-16.csv",
+                 dtype={"fips": str})
+
+plotly_map = go.Figure(go.Choroplethmapbox(geojson=counties,
+                                           locations=df.fips,
+                                           z=df.unemp,
+                                           colorscale="Viridis",
+                                           zmin=0, zmax=12,
+                                           marker={"opacity": 0.5, "line_width": 0}))
+plotly_map.update_layout(mapbox_style="carto-positron",
+                         mapbox_zoom=3,
+                         mapbox_center={"lat": 37.0902, "lon": -95.7129},
+                         margin={"r": 0, "t": 0, "l": 0, "b": 0})
+
+st.plotly_chart(plotly_map)
+
+
+### Sankey
+
+
+import urllib, json
+
+url = 'https://raw.githubusercontent.com/plotly/plotly.js/master/test/image/mocks/sankey_energy.json'
+response = urllib.request.urlopen(url)
+data = json.loads(response.read())
+
+# override gray link colors with 'source' colors
+opacity = 0.4
+# change 'magenta' to its 'rgba' value to add opacity
+data['data'][0]['node']['color'] = ['rgba(255,0,255, 0.8)' if color == "magenta" else color for color in data['data'][0]['node']['color']]
+data['data'][0]['link']['color'] = [data['data'][0]['node']['color'][src].replace("0.8", str(opacity))
+                                    for src in data['data'][0]['link']['source']]
+
+plotly_sankey = go.Figure(data=[go.Sankey(
+    valueformat = ".0f",
+    valuesuffix = "TWh",
+    # Define nodes
+    node = dict(
+      pad = 15,
+      thickness = 15,
+      line = dict(color = "black", width = 0.5),
+      label =  data['data'][0]['node']['label'],
+      color =  data['data'][0]['node']['color']
+    ),
+    # Add links
+    link = dict(
+      source =  data['data'][0]['link']['source'],
+      target =  data['data'][0]['link']['target'],
+      value =  data['data'][0]['link']['value'],
+      label =  data['data'][0]['link']['label'],
+      color =  data['data'][0]['link']['color']
+))])
+
+st.subheader("Plotly Sankey")
+
+st.plotly_chart(plotly_sankey)
+plotly_sankey = go.Figure(data=[go.Sankey(
+    valueformat = ".0f",
+    valuesuffix = "TWh",
+    # Define nodes
+    node = dict(
+      pad = 15,
+      thickness = 15,
+      line = dict(color = "black", width = 0.5),
+      label =  data['data'][0]['node']['label'],
+      color =  data['data'][0]['node']['color']
+    ),
+    # Add links
+    link = dict(
+      source =  data['data'][0]['link']['source'],
+      target =  data['data'][0]['link']['target'],
+      value =  data['data'][0]['link']['value'],
+      label =  data['data'][0]['link']['label'],
+      color =  data['data'][0]['link']['color']
+))])
+
+st.subheader("Plotly Sankey")
+
+st.plotly_chart(plotly_sankey)
 
