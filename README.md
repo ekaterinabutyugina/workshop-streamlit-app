@@ -33,6 +33,7 @@ You might be able to relate to one of the following scenarios:
 - [Livecoding](01_livecoding) is the demo of creating an app from scratch, it might be slightly different from the actual app we deploy.
 - For this we might use some additional [Code Snippets](02_snippets).
 - [Template Streamlit App](03_template_streamlit_app) folder is the one you can use for the deployment on a Streamlit cloud.
+- If time permits or after the workshop let's explore [Clean Energy Sources in Switzerland](04_exercise).
 
 ## 3) Optional: Showcase your app ##
 
