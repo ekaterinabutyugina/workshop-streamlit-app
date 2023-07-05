@@ -14,7 +14,7 @@ The instructions below are adapted from the official [Streamlit documentation](h
 
 **Note**: This first part is only relevant, if you haven't created a Github repo for this mini project yet.
 
-- If you do not have a git folder set up yet, create a new directory and save your app script (``app.py``) and the data file(s) in this folder. ``cd`` into it and initialize a git folder:
+- If you do not have a git folder set up yet, create a new directory and save your app script (``template_streamlit_app.py``) and the data file(s) in this folder. ``cd`` into it and initialize a git folder:
 
 ```bash
     mkdir my-first-streamlitapp
@@ -44,10 +44,10 @@ The instructions below are adapted from the official [Streamlit documentation](h
     matplotlib~=3.7.1
 ```
 
-- Test if your app runs in a new environment, with only the packages listed in your requirements file: Create a new conda environment, activate it and type the following lines (though you may need to change the path to your app.py file). This will first install your required packages in the new environment and then check if everything is working properly.
+- Test if your app runs in a new environment, with only the packages listed in your requirements file: Create a new conda environment, activate it and type the following lines (though you may need to change the path to your template_streamlit_app.py file). This will first install your required packages in the new environment and then check if everything is working properly.
 
 ```
-    conda create --name app_test python">=3.7"
+    conda create --name app_test python">=3.9"
     conda activate app_test
     conda install pip
     pip install -r requirements.txt
@@ -65,7 +65,7 @@ The app will not run without them. (Github currently has a file size limit of 2 
 
 - Log in to Streamlit with your Github account [here](https://share.streamlit.io/).
 
-- Click on the button ``New app`` and enter the repository name, branch and main file path (to your app.py file).
+- Click on the button ``New app`` and enter the repository name, branch and main file path (to your template_streamlit_app.py file).
 
 - Go to ``Advanced settings...`` and choose the Python version that you need for your app.
 

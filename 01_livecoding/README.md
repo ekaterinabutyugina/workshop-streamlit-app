@@ -47,11 +47,11 @@ The instructions below are adapted from the official [Streamlit documentation](h
 - Test if your app runs in a new environment, with only the packages listed in your requirements file: Create a new conda environment, activate it and type the following lines (though you may need to change the path to your app.py file). This will first install your required packages in the new environment and then check if everything is working properly.
 
 ```
-    conda create --name app_test python">=3.7"
+    conda create --name app_test python">=3.9"
     conda activate app_test
     conda install pip
     pip install -r requirements.txt
-    streamlit run template_streamlit_app.py
+    streamlit run app.py
 ```
 
 - Once everything works fine, commit and push the new/modified files to Github.
