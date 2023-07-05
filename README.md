@@ -34,6 +34,6 @@ You might be able to relate to one of the following scenarios:
 - For this we might use some additional [Code Snippets](02_snippets).
 - [Template Streamlit App](03_template_streamlit_app) folder is the one you can use for the deployment on a Streamlit cloud.
 
-## 4) Optional: Showcase your app ##
+## 3) Optional: Showcase your app ##
 
 - Get acquainted with the vibrant online data visualization community by posting about your app. Include a screenshot of your app and a link to your Github repo. Feel free to tag [COLearning](https://www.linkedin.com/school/constructor-learning/), [@Women++](https://www.linkedin.com/company/womenplusplus/), [Hack&Lead](https://www.linkedin.com/company/hackandlead/) and [@streamlit](https://twitter.com/streamlit?lang=en).
