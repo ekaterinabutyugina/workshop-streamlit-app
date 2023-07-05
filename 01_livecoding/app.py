@@ -158,27 +158,5 @@ plotly_sankey = go.Figure(data=[go.Sankey(
 st.subheader("Plotly Sankey")
 
 st.plotly_chart(plotly_sankey)
-plotly_sankey = go.Figure(data=[go.Sankey(
-    valueformat = ".0f",
-    valuesuffix = "TWh",
-    # Define nodes
-    node = dict(
-      pad = 15,
-      thickness = 15,
-      line = dict(color = "black", width = 0.5),
-      label =  data['data'][0]['node']['label'],
-      color =  data['data'][0]['node']['color']
-    ),
-    # Add links
-    link = dict(
-      source =  data['data'][0]['link']['source'],
-      target =  data['data'][0]['link']['target'],
-      value =  data['data'][0]['link']['value'],
-      label =  data['data'][0]['link']['label'],
-      color =  data['data'][0]['link']['color']
-))])
 
-st.subheader("Plotly Sankey")
-
-st.plotly_chart(plotly_sankey)
 
